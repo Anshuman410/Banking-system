@@ -29,6 +29,7 @@ fake_users_db = {
         "full_name": "Admin User",
         "hashed_password": "fakehashedsecret",
         "disabled": False,
+        "role": "admin"
     }
 }
 
@@ -42,13 +43,32 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     if user_dict['hashed_password'] != fake_hash_password(form_data.password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    return {"access_token": user_dict["username"], "token_type": "bearer"}
+    return {"access_token": user_dict["username"], "token_type": "bearer", "role": user_dict.get("role", "customer")}
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     user = fake_users_db.get(token)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")
     return user
+
+class UserRegister(BaseModel):
+    username: str
+    password: str
+    role: str = "customer"
+
+@app.post("/register")
+def register_user(user: UserRegister):
+    if user.username in fake_users_db:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    
+    fake_users_db[user.username] = {
+        "username": user.username,
+        "full_name": "Customer User" if user.role == "customer" else "Admin User",
+        "hashed_password": fake_hash_password(user.password),
+        "disabled": False,
+        "role": user.role
+    }
+    return {"message": "User registered successfully"}
 
 # --- Prediction Schema ---
 class CustomerData(BaseModel):

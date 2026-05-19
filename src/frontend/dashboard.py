@@ -7,6 +7,7 @@ import numpy as np
 import os
 import textwrap
 import re
+import base64
 from st_aggrid import AgGrid, GridOptionsBuilder
 
 # --- Page Config & Styling ---
@@ -42,6 +43,8 @@ if 'token' not in st.session_state:
     st.session_state.token = None
 if 'user' not in st.session_state:
     st.session_state.user = None
+if 'role' not in st.session_state:
+    st.session_state.role = None
 
 # --- Helpers ---
 @st.cache_data
@@ -57,63 +60,82 @@ def login(username, password):
     try:
         response = requests.post(f"{API_URL}/token", data={"username": username, "password": password})
         if response.status_code == 200:
-            st.session_state.token = response.json().get("access_token")
+            data = response.json()
+            st.session_state.token = data.get("access_token")
             st.session_state.user = username
+            st.session_state.role = data.get("role", "customer")
             return True
         return False
     except:
         return False
 
+def register_user(username, password, role):
+    try:
+        response = requests.post(f"{API_URL}/register", json={"username": username, "password": password, "role": role})
+        if response.status_code == 200:
+            return True, "Registered successfully"
+        return False, response.json().get("detail", "Registration failed")
+    except Exception as e:
+        return False, str(e)
+
+def get_image_base64(path):
+    try:
+        with open(path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode()
+    except Exception:
+        return ""
+
 # --- Unauthenticated Views ---
 def show_landing_page():
-    # Hide default Streamlit padding/header for the landing page
+    img_b64 = get_image_base64("images/Screenshot 2026-05-19 232412.png")
+    img_src = f"data:image/png;base64,{img_b64}" if img_b64 else "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop"
     
-    html_content = """
+    html_content = f"""
         <style>
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        header {visibility: hidden;}
-        .block-container {padding-top: 0rem !important; padding-bottom: 0rem !important; padding-left: 0rem !important; padding-right: 0rem !important; max-width: 100% !important;}
+        #MainMenu {{visibility: hidden;}}
+        footer {{visibility: hidden;}}
+        header {{visibility: hidden;}}
+        .block-container {{padding-top: 0rem !important; padding-bottom: 0rem !important; padding-left: 0rem !important; padding-right: 0rem !important; max-width: 100% !important;}}
         
-        .landing-body {
+        .landing-body {{
             background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
             color: #111827;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
             width: 100%;
-        }
-        .navbar {
+        }}
+        .navbar {{
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 80px;
             background-color: white;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .nav-logo {
+        }}
+        .nav-logo {{
             display: flex;
             align-items: center;
             gap: 12px;
             font-size: 24px;
             font-weight: 800;
             color: #1e3a8a;
-        }
-        .nav-links {
+        }}
+        .nav-links {{
             display: flex;
             gap: 32px;
-        }
-        .nav-link {
+        }}
+        .nav-link {{
             text-decoration: none;
             color: #374151;
             font-weight: 600;
             font-size: 15px;
-        }
-        .nav-link.active {
+        }}
+        .nav-link.active {{
             color: #2563eb;
             position: relative;
-        }
-        .nav-link.active::after {
+        }}
+        .nav-link.active::after {{
             content: '';
             position: absolute;
             bottom: -6px;
@@ -121,12 +143,12 @@ def show_landing_page():
             width: 100%;
             height: 2px;
             background-color: #2563eb;
-        }
-        .nav-buttons {
+        }}
+        .nav-buttons {{
             display: flex;
             gap: 16px;
-        }
-        .btn {
+        }}
+        .btn {{
             padding: 10px 24px;
             border-radius: 8px;
             font-weight: 600;
@@ -136,29 +158,29 @@ def show_landing_page():
             display: inline-flex;
             align-items: center;
             justify-content: center;
-        }
-        .btn-outline {
+        }}
+        .btn-outline {{
             background: white;
             border: 1px solid #d1d5db;
             color: #374151;
-        }
-        .btn-primary {
+        }}
+        .btn-primary {{
             background: #2563eb;
             border: 1px solid #2563eb;
             color: white;
-        }
+        }}
         
-        .hero-container {
+        .hero-container {{
             display: flex;
             padding: 80px 80px 40px 80px;
             justify-content: space-between;
             align-items: center;
-        }
-        .hero-text {
+        }}
+        .hero-text {{
             flex: 1.2;
             padding-right: 40px;
-        }
-        .ai-badge {
+        }}
+        .ai-badge {{
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -170,41 +192,41 @@ def show_landing_page():
             font-weight: 700;
             letter-spacing: 0.5px;
             margin-bottom: 24px;
-        }
-        .hero-title {
+        }}
+        .hero-title {{
             font-size: 4.5rem;
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 24px;
             color: #111827;
             margin-top: 0;
-        }
-        .hero-title span {
+        }}
+        .hero-title span {{
             color: #2563eb;
-        }
-        .hero-subtitle {
+        }}
+        .hero-subtitle {{
             font-size: 1.1rem;
             color: #4b5563;
             line-height: 1.6;
             margin-bottom: 40px;
             max-width: 90%;
-        }
-        .hero-actions {
+        }}
+        .hero-actions {{
             display: flex;
             gap: 16px;
             margin-bottom: 60px;
-        }
+        }}
         
-        .features-row {
+        .features-row {{
             display: flex;
             gap: 24px;
-        }
-        .feature {
+        }}
+        .feature {{
             display: flex;
             flex-direction: column;
             gap: 12px;
-        }
-        .feature-icon {
+        }}
+        .feature-icon {{
             background: #eff6ff;
             color: #2563eb;
             width: 48px;
@@ -214,46 +236,46 @@ def show_landing_page():
             align-items: center;
             justify-content: center;
             font-size: 20px;
-        }
-        .feature h4 {
+        }}
+        .feature h4 {{
             margin: 0;
             font-size: 15px;
             font-weight: 700;
             color: #111827;
-        }
-        .feature p {
+        }}
+        .feature p {{
             margin: 0;
             font-size: 13px;
             color: #6b7280;
             line-height: 1.5;
-        }
+        }}
         
-        .hero-image {
+        .hero-image {{
             flex: 1;
             position: relative;
-        }
-        .hero-image img {
+        }}
+        .hero-image img {{
             width: 100%;
             height: auto;
             border-radius: 20px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 4px solid white;
-        }
+        }}
         
-        .trusted-section {
+        .trusted-section {{
             padding: 40px 80px 80px 80px;
             text-align: center;
             background: white;
-        }
-        .trusted-title {
+        }}
+        .trusted-title {{
             font-size: 12px;
             font-weight: 700;
             color: #9ca3af;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 32px;
-        }
-        .logos-container {
+        }}
+        .logos-container {{
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -261,24 +283,18 @@ def show_landing_page():
             opacity: 0.8;
             max-width: 1000px;
             margin: 0 auto;
-        }
-        .logos-container img {
+        }}
+        .logos-container img {{
             height: 40px;
             max-width: 140px;
             object-fit: contain;
-        }
+        }}
         
-        .shield-icon {
+        .shield-icon {{
             width: 32px;
             height: 32px;
             fill: #2563eb;
-        }
-        
-        .login-wrapper {
-            padding: 80px 80px;
-            background: #F8FAFC;
-            border-top: 1px solid #e5e7eb;
-        }
+        }}
         </style>
 
         <div class="landing-body">
@@ -292,15 +308,15 @@ def show_landing_page():
                     ChurnShield
                 </div>
                 <div class="nav-links">
-                    <a href="#" class="nav-link active">Home</a>
-                    <a href="#" class="nav-link">Product</a>
-                    <a href="#" class="nav-link">Solutions</a>
-                    <a href="#" class="nav-link">Insights</a>
-                    <a href="#" class="nav-link">About Us</a>
+                    <a href="?page=home" class="nav-link active">Home</a>
+                    <a href="?page=product" class="nav-link">Product</a>
+                    <a href="?page=solutions" class="nav-link">Solutions</a>
+                    <a href="?page=insights" class="nav-link">Insights</a>
+                    <a href="?page=about" class="nav-link">About Us</a>
                 </div>
                 <div class="nav-buttons">
-                    <a href="#login-section" class="btn btn-outline">Login</a>
-                    <a href="#login-section" class="btn btn-primary">Get Started</a>
+                    <a href="?page=login" class="btn btn-outline">Login</a>
+                    <a href="?page=register" class="btn btn-primary">Get Started</a>
                 </div>
             </div>
             
@@ -314,8 +330,8 @@ def show_landing_page():
                         ChurnShield uses advanced machine learning to identify at-risk customers, helping banks take proactive actions that improve retention and boost profitability.
                     </p>
                     <div class="hero-actions">
-                        <a href="#login-section" class="btn btn-primary" style="padding: 14px 28px;">Explore Dashboard &rarr;</a>
-                        <a href="#login-section" class="btn btn-outline" style="padding: 14px 28px;">How It Works &#9654;</a>
+                        <a href="?page=login" class="btn btn-primary" style="padding: 14px 28px;">Explore Dashboard &rarr;</a>
+                        <a href="?page=about" class="btn btn-outline" style="padding: 14px 28px;">How It Works &#9654;</a>
                     </div>
                     
                     <div class="features-row">
@@ -338,8 +354,7 @@ def show_landing_page():
                 </div>
                 
                 <div class="hero-image">
-                    <!-- The image has been replaced with a high-quality relevant Unsplash image. You can replace this src with your specific image path if needed -->
-                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop" alt="Bank Building">
+                    <img src="{img_src}" alt="Bank Building">
                 </div>
             </div>
             
@@ -354,19 +369,18 @@ def show_landing_page():
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/IndusInd_Bank_logo.svg/2560px-IndusInd_Bank_logo.svg.png" alt="IndusInd Bank">
                 </div>
             </div>
-            <div id="login-section" class="login-wrapper"></div>
         </div>
     """
     
-    # Strip leading whitespace from all lines so markdown doesn't treat them as code blocks
     html_content = re.sub(r'^[ \t]+', '', html_content, flags=re.MULTILINE)
     st.markdown(html_content, unsafe_allow_html=True)
-    
-    st.markdown("<h2 style='text-align: center; margin-top: -60px; margin-bottom: 30px; position: relative; z-index: 10; color: #111827;'>🔐 Login to Access Dashboard</h2>", unsafe_allow_html=True)
+
+def show_login_page():
+    st.markdown("<br><br><h2 style='text-align: center;'>🔐 Secure Login</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         with st.form("login_form"):
-            user = st.text_input("Username (hint: admin)")
+            user = st.text_input("Username (hint: admin or registered customer)")
             pwd = st.text_input("Password (hint: secret)", type="password")
             submit = st.form_submit_button("Login to Dashboard", use_container_width=True)
             if submit:
@@ -375,6 +389,45 @@ def show_landing_page():
                     st.rerun()
                 else:
                     st.error("Invalid credentials.")
+        
+        st.markdown("<div style='text-align:center;'>Don't have an account?</div>", unsafe_allow_html=True)
+        if st.button("Register as Customer", use_container_width=True):
+            st.query_params["page"] = "register"
+            st.rerun()
+            
+        if st.button("← Back to Home", use_container_width=True):
+            st.query_params["page"] = "home"
+            st.rerun()
+
+def show_register_page():
+    st.markdown("<br><br><h2 style='text-align: center;'>📝 Register as Customer</h2>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("register_form"):
+            user = st.text_input("Choose Username")
+            pwd = st.text_input("Choose Password", type="password")
+            submit = st.form_submit_button("Register Account", use_container_width=True)
+            if submit:
+                if len(user) < 3 or len(pwd) < 3:
+                    st.error("Username and password must be at least 3 characters.")
+                else:
+                    success, msg = register_user(user, pwd, "customer")
+                    if success:
+                        st.success("Registration successful! You can now login.")
+                    else:
+                        st.error(f"Registration failed: {msg}")
+                        
+        if st.button("← Go to Login", use_container_width=True):
+            st.query_params["page"] = "login"
+            st.rerun()
+
+def show_placeholder_page(title):
+    st.markdown(f"<br><br><h2 style='text-align: center;'>🚧 {title} (Coming Soon)</h2>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("← Back to Home", use_container_width=True):
+            st.query_params["page"] = "home"
+            st.rerun()
 
 # --- Authenticated Views (Dashboard) ---
 def show_dashboard():
@@ -512,24 +565,55 @@ def show_dashboard():
             except Exception as e:
                 st.error(f"API Connection Failed: {e}")
 
+def show_customer_dashboard():
+    st.title(f"👋 Welcome to your Customer Portal, {st.session_state.user}!")
+    st.info("Here you can view your account status, tailored offers, and recent transactions.")
+    
+    c1, c2, c3 = st.columns(3)
+    c1.markdown("<div class='metric-card'><h4>Current Balance</h4><h2>$12,450.00</h2></div>", unsafe_allow_html=True)
+    c2.markdown("<div class='metric-card'><h4>Reward Points</h4><h2>3,250</h2></div>", unsafe_allow_html=True)
+    c3.markdown("<div class='metric-card'><h4>Status</h4><h2 style='color: #2ECC71;'>Active Premium</h2></div>", unsafe_allow_html=True)
+    
+    st.markdown("### Personalized Offers")
+    st.warning("🎁 Special Offer: Upgrade to our Platinum Tier and get 5% cashback on all purchases!")
 
 # --- Main Router ---
 def main():
     if not st.session_state.token:
-        # Unauthenticated: Landing Page
-        show_landing_page()
+        # Unauthenticated Routing
+        page = st.query_params.get("page", "home")
+        
+        if page == "login":
+            show_login_page()
+        elif page == "register":
+            show_register_page()
+        elif page in ["product", "solutions", "insights", "about"]:
+            show_placeholder_page(page.capitalize())
+        else:
+            show_landing_page()
     else:
         # Authenticated: Sidebar + Dashboard
+        role = st.session_state.get("role", "customer")
         st.sidebar.title("🏦 Navigation")
-        st.sidebar.success(f"User: {st.session_state.user}")
-        menu = ["Dashboard (KPIs & Table)", "Logout"]
+        st.sidebar.success(f"User: {st.session_state.user}\nRole: {role.capitalize()}")
+        
+        if role == "admin":
+            menu = ["Admin Dashboard", "Logout"]
+        else:
+            menu = ["Customer Profile", "Logout"]
+            
         choice = st.sidebar.radio("Go to", menu)
         
-        if choice == "Dashboard (KPIs & Table)":
+        if choice == "Admin Dashboard":
             show_dashboard()
+        elif choice == "Customer Profile":
+            show_customer_dashboard()
         elif choice == "Logout":
             st.session_state.token = None
             st.session_state.user = None
+            st.session_state.role = None
+            if "page" in st.query_params:
+                del st.query_params["page"]
             st.rerun()
 
 if __name__ == "__main__":
