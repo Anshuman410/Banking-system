@@ -44,8 +44,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-API_URL = "http://backend:8000" # For Docker, we'll configure it. If local, we'll try localhost
-API_URL_LOCAL = "http://localhost:8000"
+import os
+API_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+
 
 # --- State Management ---
 if 'token' not in st.session_state:
@@ -64,7 +65,7 @@ def load_data():
 
 def login(username, password):
     try:
-        response = requests.post(f"{API_URL_LOCAL}/token", data={"username": username, "password": password})
+        response = requests.post(f"{API_URL}/token", data={"username": username, "password": password})
         if response.status_code == 200:
             st.session_state.token = response.json().get("access_token")
             st.session_state.user = username
@@ -172,7 +173,7 @@ def show_dashboard():
         
         with st.spinner("Scoring customer and calculating SHAP values..."):
             try:
-                res = requests.post(f"{API_URL_LOCAL}/predict", json=payload, headers=headers)
+                res = requests.post(f"{API_URL}/predict", json=payload, headers=headers)
                 if res.status_code == 200:
                     data = res.json()
                     

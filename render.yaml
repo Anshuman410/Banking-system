@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: bank-churn-backend
+    env: docker
+    dockerfilePath: Dockerfile.backend
+    plan: free
+    healthCheckPath: /
+
+  - type: web
+    name: bank-churn-frontend
+    env: docker
+    dockerfilePath: Dockerfile.frontend
+    plan: free
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: bank-churn-backend
+          envVarKey: RENDER_EXTERNAL_URL
