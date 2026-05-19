@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import numpy as np
 import os
 import textwrap
+import re
 from st_aggrid import AgGrid, GridOptionsBuilder
 
 # --- Page Config & Styling ---
@@ -66,7 +67,8 @@ def login(username, password):
 # --- Unauthenticated Views ---
 def show_landing_page():
     # Hide default Streamlit padding/header for the landing page
-    st.markdown(textwrap.dedent("""
+    
+    html_content = """
         <style>
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
@@ -354,7 +356,11 @@ def show_landing_page():
             </div>
             <div id="login-section" class="login-wrapper"></div>
         </div>
-    """), unsafe_allow_html=True)
+    """
+    
+    # Strip leading whitespace from all lines so markdown doesn't treat them as code blocks
+    html_content = re.sub(r'^[ \t]+', '', html_content, flags=re.MULTILINE)
+    st.markdown(html_content, unsafe_allow_html=True)
     
     st.markdown("<h2 style='text-align: center; margin-top: -60px; margin-bottom: 30px; position: relative; z-index: 10; color: #111827;'>🔐 Login to Access Dashboard</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
