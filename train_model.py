@@ -29,7 +29,8 @@ def train():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
     numeric_features = ['CreditScore', 'Age', 'Tenure', 'Balance', 'NumOfProducts', 
-                        'EstimatedSalary', 'Balance_to_Salary_Ratio', 'IsActive_by_CreditCard']
+                        'EstimatedSalary', 'Balance_to_Salary_Ratio', 'IsActive_by_CreditCard',
+                        'MonthlyRevenue', 'NPS', 'CLV']
     categorical_features = ['Geography', 'Gender']
 
     preprocessor = ColumnTransformer(

@@ -63,6 +63,9 @@ class CustomerData(BaseModel):
     HasCrCard: int
     IsActiveMember: int
     EstimatedSalary: float
+    MonthlyRevenue: float
+    NPS: int
+    CLV: float
 
 class ShapValue(BaseModel):
     feature: str
