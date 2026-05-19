@@ -308,15 +308,15 @@ def show_landing_page():
                     ChurnShield
                 </div>
                 <div class="nav-links">
-                    <a href="?page=home" class="nav-link active">Home</a>
-                    <a href="?page=product" class="nav-link">Product</a>
-                    <a href="?page=solutions" class="nav-link">Solutions</a>
-                    <a href="?page=insights" class="nav-link">Insights</a>
-                    <a href="?page=about" class="nav-link">About Us</a>
+                    <a href="?page=home" target="_self" class="nav-link active">Home</a>
+                    <a href="?page=product" target="_self" class="nav-link">Product</a>
+                    <a href="?page=solutions" target="_self" class="nav-link">Solutions</a>
+                    <a href="?page=insights" target="_self" class="nav-link">Insights</a>
+                    <a href="?page=about" target="_self" class="nav-link">About Us</a>
                 </div>
                 <div class="nav-buttons">
-                    <a href="?page=login" class="btn btn-outline">Login</a>
-                    <a href="?page=register" class="btn btn-primary">Get Started</a>
+                    <a href="?page=login" target="_self" class="btn btn-outline">Login</a>
+                    <a href="?page=register" target="_self" class="btn btn-primary">Get Started</a>
                 </div>
             </div>
             
@@ -330,8 +330,8 @@ def show_landing_page():
                         ChurnShield uses advanced machine learning to identify at-risk customers, helping banks take proactive actions that improve retention and boost profitability.
                     </p>
                     <div class="hero-actions">
-                        <a href="?page=login" class="btn btn-primary" style="padding: 14px 28px;">Explore Dashboard &rarr;</a>
-                        <a href="?page=about" class="btn btn-outline" style="padding: 14px 28px;">How It Works &#9654;</a>
+                        <a href="?page=login" target="_self" class="btn btn-primary" style="padding: 14px 28px;">Explore Dashboard &rarr;</a>
+                        <a href="?page=about" target="_self" class="btn btn-outline" style="padding: 14px 28px;">How It Works &#9654;</a>
                     </div>
                     
                     <div class="features-row">
