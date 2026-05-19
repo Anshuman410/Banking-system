@@ -12,25 +12,77 @@ st.set_page_config(page_title="Bank Churn Analytics", layout="wide", page_icon="
 
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    
     .stApp {
-        background-color: #FFFFFF;
-        color: #333333;
-        font-family: 'Inter', 'Roboto', sans-serif;
+        background-color: #F8FAFC; /* Very light blue/gray background */
+        color: #0F172A;
+        font-family: 'Inter', sans-serif;
     }
+    
+    /* Top Nav Style */
+    .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0px;
+        margin-bottom: 2rem;
+    }
+    .nav-logo {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1E3A8A;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* Typography */
+    h1.hero-title {
+        font-size: 3.8rem !important;
+        font-weight: 800 !important;
+        line-height: 1.1 !important;
+        margin-bottom: 1rem !important;
+        color: #0F172A;
+    }
+    h1.hero-title span {
+        color: #2563EB; /* Blue highlight */
+    }
+    p.hero-subtitle {
+        font-size: 1.2rem;
+        color: #64748B;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+    
+    /* Feature cards */
+    .feature-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        text-align: left;
+    }
+    .feature-card h4 {
+        margin-top: 10px;
+        margin-bottom: 5px;
+        color: #0F172A;
+        font-weight: 600;
+    }
+    .feature-card p {
+        color: #64748B;
+        font-size: 0.9rem;
+    }
+    
+    /* KPI Metric Cards (Dashboard) */
     .metric-card {
-        background: #F8F9FA;
+        background: #FFFFFF;
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         text-align: center;
         margin-bottom: 20px;
-    }
-    .hero-section {
-        text-align: center;
-        padding: 50px 0;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        border-radius: 12px;
-        margin-bottom: 40px;
+        border: 1px solid #E2E8F0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -67,45 +119,89 @@ def login(username, password):
 # --- Unauthenticated Views ---
 def show_landing_page():
     # Top Nav imitation
-    col1, col2, col3, col4 = st.columns([4, 1, 1, 1])
-    with col1:
-        st.markdown("### 🏦 Bank Churn Predictor")
-    
-    st.markdown("---")
-    
-    # Hero Section
     st.markdown("""
-    <div class="hero-section">
-        <h1 style='color: #2C3E50;'>Predict & Prevent Customer Churn</h1>
-        <h3 style='color: #34495E;'>Identify at-risk accounts and deploy retention offers immediately.</h3>
+    <div class="nav-container">
+        <div class="nav-logo">
+            <span style='font-size:30px;'>🛡️</span> ChurnShield
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    col_feat1, col_feat2, col_feat3 = st.columns(3)
-    col_feat1.info("✔️ **Boost Retention**\nTarget interventions before customers leave.")
-    col_feat2.info("✔️ **Data-Driven Actions**\nUse XGBoost and K-Means for smart segmentation.")
-    col_feat3.info("✔️ **Explainable AI**\nUnderstand exactly why a customer is at risk via SHAP.")
+    # Hero Section
+    col_text, col_img = st.columns([1.2, 1])
     
+    with col_text:
+        st.markdown("""
+        <div style="background-color:#EFF6FF; color:#1E40AF; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem;">
+            ✨ AI-POWERED BANKING SOLUTION
+        </div>
+        <h1 class="hero-title">Predict Churn.<br><span>Prevent Loss.</span></h1>
+        <p class="hero-subtitle">
+            ChurnShield uses advanced machine learning to identify at-risk customers, helping banks take proactive actions that improve retention and boost profitability.
+        </p>
+        """, unsafe_allow_html=True)
+        
+        # We use Streamlit native buttons so we can attach logic
+        b1, b2, b3 = st.columns([1, 1, 1.5])
+        with b1:
+            explore_btn = st.button("Explore Dashboard →", type="primary", use_container_width=True)
+        with b2:
+            login_btn = st.button("Login", use_container_width=True)
+            
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        
+        # Features Row
+        f1, f2, f3 = st.columns(3)
+        with f1:
+            st.markdown("""
+            <div class="feature-card">
+                <span style="font-size:24px; color:#2563EB;">🧠</span>
+                <h4>AI Predictions</h4>
+                <p>Identify customers likely to churn</p>
+            </div>
+            """, unsafe_allow_html=True)
+        with f2:
+            st.markdown("""
+            <div class="feature-card">
+                <span style="font-size:24px; color:#2563EB;">📊</span>
+                <h4>Smart Insights</h4>
+                <p>Understand key churn drivers</p>
+            </div>
+            """, unsafe_allow_html=True)
+        with f3:
+            st.markdown("""
+            <div class="feature-card">
+                <span style="font-size:24px; color:#2563EB;">🛡️</span>
+                <h4>Actionable Strategies</h4>
+                <p>Take data-driven retention actions</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+    with col_img:
+        # Use an attractive Unsplash image of a modern bank building
+        st.image("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop", use_column_width=True)
+        
     st.markdown("<br><br><br>", unsafe_allow_html=True)
     
-    # About Section
-    st.markdown("## ℹ️ About the Platform")
-    st.write("Our AI-driven dashboard helps your team save revenue by reducing churn. See top KPIs and customer insights at a glance.")
+    # Trusted By Section
+    st.markdown("<h4 style='text-align: center; color: #94A3B8; letter-spacing: 2px; font-size: 0.9rem;'>TRUSTED BY LEADING BANKS</h4>", unsafe_allow_html=True)
+    st.markdown("<div style='display:flex; justify-content:center; gap:40px; margin-top:20px; opacity:0.6; font-weight:bold; font-size:1.2rem; color:#475569; flex-wrap:wrap;'><span>HDFC BANK</span><span>ICICI Bank</span><span>AXIS BANK</span><span>SBI</span><span>Kotak</span><span>IndusInd Bank</span></div>", unsafe_allow_html=True)
     
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.markdown("---")
     
-    # Login Section
-    st.markdown("## 🔐 Login to Access Dashboard")
-    with st.form("login_form"):
-        user = st.text_input("Username (hint: admin)")
-        pwd = st.text_input("Password (hint: secret)", type="password")
-        submit = st.form_submit_button("Login")
-        if submit:
-            if login(user, pwd):
-                st.success("Login successful!")
-                st.rerun()
-            else:
-                st.error("Invalid credentials.")
+    # Render Login Form if login button clicked or user scrolls down
+    if login_btn or explore_btn:
+        st.markdown("## 🔐 Login to Access Dashboard")
+        with st.form("login_form"):
+            user = st.text_input("Username (hint: admin)")
+            pwd = st.text_input("Password (hint: secret)", type="password")
+            submit = st.form_submit_button("Login")
+            if submit:
+                if login(user, pwd):
+                    st.success("Login successful!")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials.")
 
 # --- Authenticated Views (Dashboard) ---
 def show_dashboard():
