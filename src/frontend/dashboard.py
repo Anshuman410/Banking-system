@@ -12,66 +12,12 @@ st.set_page_config(page_title="Bank Churn Analytics", layout="wide", page_icon="
 
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     
     .stApp {
-        background-color: #F8FAFC; /* Very light blue/gray background */
+        background-color: #F8FAFC;
         color: #0F172A;
         font-family: 'Inter', sans-serif;
-    }
-    
-    /* Top Nav Style */
-    .nav-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0px;
-        margin-bottom: 2rem;
-    }
-    .nav-logo {
-        font-size: 24px;
-        font-weight: 800;
-        color: #1E3A8A;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    /* Typography */
-    h1.hero-title {
-        font-size: 3.8rem !important;
-        font-weight: 800 !important;
-        line-height: 1.1 !important;
-        margin-bottom: 1rem !important;
-        color: #0F172A;
-    }
-    h1.hero-title span {
-        color: #2563EB; /* Blue highlight */
-    }
-    p.hero-subtitle {
-        font-size: 1.2rem;
-        color: #64748B;
-        line-height: 1.6;
-        margin-bottom: 2rem;
-    }
-    
-    /* Feature cards */
-    .feature-card {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        text-align: left;
-    }
-    .feature-card h4 {
-        margin-top: 10px;
-        margin-bottom: 5px;
-        color: #0F172A;
-        font-weight: 600;
-    }
-    .feature-card p {
-        color: #64748B;
-        font-size: 0.9rem;
     }
     
     /* KPI Metric Cards (Dashboard) */
@@ -118,84 +64,304 @@ def login(username, password):
 
 # --- Unauthenticated Views ---
 def show_landing_page():
-    # Top Nav imitation
+    # Hide default Streamlit padding/header for the landing page
     st.markdown("""
-    <div class="nav-container">
-        <div class="nav-logo">
-            <span style='font-size:30px;'>🛡️</span> ChurnShield
+        <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        .block-container {padding-top: 0rem !important; padding-bottom: 0rem !important; padding-left: 0rem !important; padding-right: 0rem !important; max-width: 100% !important;}
+        
+        .landing-body {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            color: #111827;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            width: 100%;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 80px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .nav-link.active {
+            color: #2563eb;
+            position: relative;
+        }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2563eb;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+        }
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-outline {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+        .btn-primary {
+            background: #2563eb;
+            border: 1px solid #2563eb;
+            color: white;
+        }
+        
+        .hero-container {
+            display: flex;
+            padding: 80px 80px 40px 80px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hero-text {
+            flex: 1.2;
+            padding-right: 40px;
+        }
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #eff6ff;
+            color: #1e40af;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+        }
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: #111827;
+            margin-top: 0;
+        }
+        .hero-title span {
+            color: #2563eb;
+        }
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 90%;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+        
+        .features-row {
+            display: flex;
+            gap: 24px;
+        }
+        .feature {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .feature-icon {
+            background: #eff6ff;
+            color: #2563eb;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .feature h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .feature p {
+            margin: 0;
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        
+        .hero-image {
+            flex: 1;
+            position: relative;
+        }
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 4px solid white;
+        }
+        
+        .trusted-section {
+            padding: 40px 80px 80px 80px;
+            text-align: center;
+            background: white;
+        }
+        .trusted-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #9ca3af;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+        .logos-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            opacity: 0.8;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .logos-container img {
+            height: 40px;
+            max-width: 140px;
+            object-fit: contain;
+        }
+        
+        .shield-icon {
+            width: 32px;
+            height: 32px;
+            fill: #2563eb;
+        }
+        
+        .login-wrapper {
+            padding: 80px 80px;
+            background: #F8FAFC;
+            border-top: 1px solid #e5e7eb;
+        }
+        </style>
+
+        <div class="landing-body">
+            <div class="navbar">
+                <div class="nav-logo">
+                    <svg class="shield-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      <path d="M11 7h2v5h-2z" fill="#fff"/>
+                      <path d="M11 14h2v2h-2z" fill="#fff"/>
+                    </svg>
+                    ChurnShield
+                </div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link active">Home</a>
+                    <a href="#" class="nav-link">Product</a>
+                    <a href="#" class="nav-link">Solutions</a>
+                    <a href="#" class="nav-link">Insights</a>
+                    <a href="#" class="nav-link">About Us</a>
+                </div>
+                <div class="nav-buttons">
+                    <a href="#login-section" class="btn btn-outline">Login</a>
+                    <a href="#login-section" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+            
+            <div class="hero-container">
+                <div class="hero-text">
+                    <div class="ai-badge">
+                        <span>✨</span> AI-POWERED BANKING SOLUTION
+                    </div>
+                    <h1 class="hero-title">Predict Churn.<br><span>Prevent Loss.</span></h1>
+                    <p class="hero-subtitle">
+                        ChurnShield uses advanced machine learning to identify at-risk customers, helping banks take proactive actions that improve retention and boost profitability.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#login-section" class="btn btn-primary" style="padding: 14px 28px;">Explore Dashboard &rarr;</a>
+                        <a href="#login-section" class="btn btn-outline" style="padding: 14px 28px;">How It Works &#9654;</a>
+                    </div>
+                    
+                    <div class="features-row">
+                        <div class="feature">
+                            <div class="feature-icon">🧠</div>
+                            <h4>AI Predictions</h4>
+                            <p>Identify customers<br>likely to churn</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">📊</div>
+                            <h4>Smart Insights</h4>
+                            <p>Understand key<br>churn drivers</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">🛡️</div>
+                            <h4>Actionable Strategies</h4>
+                            <p>Take data-driven<br>retention actions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-image">
+                    <!-- The image has been replaced with a high-quality relevant Unsplash image. You can replace this src with your specific image path if needed -->
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop" alt="Bank Building">
+                </div>
+            </div>
+            
+            <div class="trusted-section">
+                <div class="trusted-title">TRUSTED BY LEADING BANKS</div>
+                <div class="logos-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/28/HDFC_Bank_Logo.svg" alt="HDFC Bank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/ICICI_Bank_Logo.svg" alt="ICICI Bank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Axis_Bank_logo.svg" alt="Axis Bank">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/5/58/State_Bank_of_India_logo.svg" alt="SBI">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Kotak_Mahindra_Bank_logo.svg/2560px-Kotak_Mahindra_Bank_logo.svg.png" alt="Kotak Mahindra Bank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/IndusInd_Bank_logo.svg/2560px-IndusInd_Bank_logo.svg.png" alt="IndusInd Bank">
+                </div>
+            </div>
+            <div id="login-section" class="login-wrapper"></div>
         </div>
-    </div>
     """, unsafe_allow_html=True)
     
-    # Hero Section
-    col_text, col_img = st.columns([1.2, 1])
-    
-    with col_text:
-        st.markdown("""
-        <div style="background-color:#EFF6FF; color:#1E40AF; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem;">
-            ✨ AI-POWERED BANKING SOLUTION
-        </div>
-        <h1 class="hero-title">Predict Churn.<br><span>Prevent Loss.</span></h1>
-        <p class="hero-subtitle">
-            ChurnShield uses advanced machine learning to identify at-risk customers, helping banks take proactive actions that improve retention and boost profitability.
-        </p>
-        """, unsafe_allow_html=True)
-        
-        # We use Streamlit native buttons so we can attach logic
-        b1, b2, b3 = st.columns([1, 1, 1.5])
-        with b1:
-            explore_btn = st.button("Explore Dashboard →", type="primary", use_container_width=True)
-        with b2:
-            login_btn = st.button("Login", use_container_width=True)
-            
-        st.markdown("<br><br>", unsafe_allow_html=True)
-        
-        # Features Row
-        f1, f2, f3 = st.columns(3)
-        with f1:
-            st.markdown("""
-            <div class="feature-card">
-                <span style="font-size:24px; color:#2563EB;">🧠</span>
-                <h4>AI Predictions</h4>
-                <p>Identify customers likely to churn</p>
-            </div>
-            """, unsafe_allow_html=True)
-        with f2:
-            st.markdown("""
-            <div class="feature-card">
-                <span style="font-size:24px; color:#2563EB;">📊</span>
-                <h4>Smart Insights</h4>
-                <p>Understand key churn drivers</p>
-            </div>
-            """, unsafe_allow_html=True)
-        with f3:
-            st.markdown("""
-            <div class="feature-card">
-                <span style="font-size:24px; color:#2563EB;">🛡️</span>
-                <h4>Actionable Strategies</h4>
-                <p>Take data-driven retention actions</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-    with col_img:
-        # Use an attractive Unsplash image of a modern bank building
-        st.image("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop", use_column_width=True)
-        
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
-    
-    # Trusted By Section
-    st.markdown("<h4 style='text-align: center; color: #94A3B8; letter-spacing: 2px; font-size: 0.9rem;'>TRUSTED BY LEADING BANKS</h4>", unsafe_allow_html=True)
-    st.markdown("<div style='display:flex; justify-content:center; gap:40px; margin-top:20px; opacity:0.6; font-weight:bold; font-size:1.2rem; color:#475569; flex-wrap:wrap;'><span>HDFC BANK</span><span>ICICI Bank</span><span>AXIS BANK</span><span>SBI</span><span>Kotak</span><span>IndusInd Bank</span></div>", unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Render Login Form if login button clicked or user scrolls down
-    if login_btn or explore_btn:
-        st.markdown("## 🔐 Login to Access Dashboard")
+    st.markdown("<h2 style='text-align: center; margin-top: -60px; margin-bottom: 30px; position: relative; z-index: 10; color: #111827;'>🔐 Login to Access Dashboard</h2>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
         with st.form("login_form"):
             user = st.text_input("Username (hint: admin)")
             pwd = st.text_input("Password (hint: secret)", type="password")
-            submit = st.form_submit_button("Login")
+            submit = st.form_submit_button("Login to Dashboard", use_container_width=True)
             if submit:
                 if login(user, pwd):
                     st.success("Login successful!")
